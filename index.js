@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 require("dotenv").config();
 const cors = require("cors");
 // JWT_SECRET_KEY = gfg_jwt_secret_key
@@ -11,7 +12,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors({ origin: "*" }))
 app.use(express.json())
 const userRouter = require("./routes/signupRoute");
-const adminrouter = require('./routes/admin.route')
+const adminrouter = require('./routes/adminRoute')
 const { required } = require("nodemon/lib/config");
 app.use("/log", userRouter)
 app.use('/admin', adminrouter)

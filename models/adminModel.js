@@ -31,7 +31,7 @@ const adminSchema = new mongoose.Schema({
 //   }
 
 let saltRound = 15; //The number of times our password is to be hashed
-userSchema.pre("save", function (next) {
+adminSchema.pre("save", function (next) {
   bcryptjs
     .hash(this.password, saltRound)
     .then((hashed) => {
@@ -46,6 +46,6 @@ userSchema.pre("save", function (next) {
 // const usersModel = mongoose.models.users_tbs || mongoose.model("users_tbs", userSchema);
 // module.exports = usersModel;
 
-const adminmodel = mongoose.models.admin_collections || mongoose.model("admin_collections", adminSchema);
+const adminModel = mongoose.models.admin_collections || mongoose.model("admin_collections", adminSchema);
 
-module.exports = adminmodel;
+module.exports = adminModel;

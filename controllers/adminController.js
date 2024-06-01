@@ -1,4 +1,4 @@
-const adminmodel = require("../models/usersModel");
+const adminModel = require("../models/adminModel");
 const bcryptjs = require("bcryptjs");
 const jsonWebToken = require("jsonwebtoken");
 // const { cloudinary } = require("../config/cloudinary.config")
@@ -36,7 +36,7 @@ const glandingpage = (req, res) => {
 const registeradmin = async (req, res, next) => {
   let email = req.body.email;
   try {
-    await adminmodel.find({ email: email }).then((result) => {
+    await adminModel.find({ email: email }).then((result) => {
       if (result.length > 0) {
         res
           .status(409)
@@ -46,7 +46,7 @@ const registeradmin = async (req, res, next) => {
         //   firstName: req.body.firstname
         // }
 
-        let form = new adminmodel(req.body);
+        let form = new adminModel(req.body);
         form
           .save()
           .then((result1) => {
@@ -108,9 +108,9 @@ const adminlogin = async (req, res, next) => {
   let email = req.body.email;
   let password = req.body.password;
   // let secret = secret;
-  let firstname = req.body.firstname
+  let username = req.body.username
   try {
-    await adminmodel.find({ email: email }).then((result) => {
+    await adminModel.find({ email: email }).then((result) => {
       if (result.length === 0) {
         res.status(404).send({ message: "You don't have an account with us", status: false })
       } else {
@@ -120,7 +120,7 @@ const adminlogin = async (req, res, next) => {
           if (result2) {
             const token = jsonWebToken.sign({ email }, "secretkey", { expiresIn: 90 })
             console.log(token)
-            res.status(200).send({ message: "Welcome" + result[0].firstname, status: true, token })
+            res.status(200).send({ message: "Welcome" + result[0].username, status: true, token })
             res.send.body
           } else {
             res.status(401).send({ message: "Invalid password", status: false })

@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const{ glandingpage, gadminsignup, registeradmin, adminlogin, uploadimage, geTdashboard, uploadchat} = require('../controllers/adminController')
+const{ glandingpage, gadminsignup, registeradmin, uploadchats, adminlogin, uploadimage, geTdashboard, uploadchat} = require('../controllers/adminController')
 
 const { resgisteradminValidationSchema, loginValidationSchema, uploadchatValidationSchema, fileuploadValidationSchema } = require("../middleware/usersValidatr")
 const { validate } = require("../middleware/validae")
@@ -15,6 +15,7 @@ router.post('/signup', registeradmin);
 router.post('/login', adminlogin);
 router.post('/upload', uploadimage);
 router.post("/comment", uploadchat)
+router.get("/comments", uploadchats)
 
 
 module.exports = router;

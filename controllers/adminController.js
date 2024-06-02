@@ -154,11 +154,14 @@ const geTdashboard = (req, res) => {
   })
 }
 const uploadchat = (req, res) => {
-    console.log(req.body);
+    console.log(req.body, "body");
 }
-
+const uploadchats = (req, res)=>{
+    // res.send("comment")
+    res.send("comments")
+}
 // const registerUser = (req, res) => {
 //   console.log(req.boy);
 // };
 
-module.exports = { glandingpage, registeradmin, gadminsignup, adminlogin, geTdashboard, uploadimage, uploadchat };
+module.exports = { glandingpage, registeradmin, gadminsignup, adminlogin, geTdashboard, uploadimage, uploadchat, uploadchats };

@@ -25,6 +25,7 @@ const glandingpage = (req, res) => {
     { name: "devnonso", age: 22 },
     { name: "exhibit", age: 20 },
     { name: "obasi", age: 19 },
+    {level: "Admin", name: "Dan", age: "30"}
   ]);
 };
 

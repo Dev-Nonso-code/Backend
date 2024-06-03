@@ -6,27 +6,28 @@ const jsonWebToken = require("jsonwebtoken");
 // const { sendMail } = require("../utils/mailer");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary");
+const messageModel = require("../models/messageModel");
 
 // import { v2 as cloudinary } from 'cloudinary';
 // import { required } from 'nodemon/lib/config';
 
 cloudinary.config({
-  cloud_name: process.env.CLOUND_NAME,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET
+    cloud_name: process.env.CLOUND_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
 });
 
 const gadminsignup = (req, res) => {
-  res.render("signup")
+    res.render("signup")
 }
 
 const glandingpage = (req, res) => {
-  res.send([
-    { name: "devnonso", age: 22 },
-    { name: "exhibit", age: 20 },
-    { name: "obasi", age: 19 },
-    {level: "Admin", name: "Dan", age: "30"}
-  ]);
+    res.send([
+        { name: "devnonso", age: 22 },
+        { name: "exhibit", age: 20 },
+        { name: "obasi", age: 19 },
+        { level: "Admin", name: "Dan", age: "30" }
+    ]);
 };
 
 // const uploadchat = (req, res) => {
@@ -35,44 +36,44 @@ const glandingpage = (req, res) => {
 // }
 
 const registeradmin = async (req, res, next) => {
-  let email = req.body.email;
-  try {
-    await adminModel.find({ email: email }).then((result) => {
-      if (result.length > 0) {
-        res
-          .status(409)
-          .send({ message: "Email already exists.", status: false });
-      } else {
-        // let userData = {
-        //   firstName: req.body.firstname
-        // }
+    let email = req.body.email;
+    try {
+        await adminModel.find({ email: email }).then((result) => {
+            if (result.length > 0) {
+                res
+                    .status(409)
+                    .send({ message: "Email already exists.", status: false });
+            } else {
+                // let userData = {
+                //   firstName: req.body.firstname
+                // }
 
-        let form = new adminModel(req.body);
-        form
-          .save()
-          .then((result1) => {
-            console.log(result1);
-            console.log(req.body);
-            console.log("your data has saved to database");
-            // sendMail(email); //This function carries our user email as params.
-            res
-              .status(201)
-              .send({
-                message: "Account has been created successfully",
-                status: true,
+                let form = new adminModel(req.body);
+                form
+                    .save()
+                    .then((result1) => {
+                        console.log(result1);
+                        console.log(req.body);
+                        console.log("your data has saved to database");
+                        // sendMail(email); //This function carries our user email as params.
+                        res
+                            .status(201)
+                            .send({
+                                message: "Account has been created successfully",
+                                status: true,
 
-              });
+                            });
 
-            // console.log(req.body);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-    });
-  } catch (error) {
-    next(error);
-  }
+                        // console.log(req.body);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
 };
 
 // const signin = (req, res)=>{
@@ -86,79 +87,116 @@ const registeradmin = async (req, res, next) => {
 // }
 
 const uploadimage = async (req, res) => {
-  let myfile = req.body.myfile
-  const email = req.body
-  console.log(myfile);
-  try {
-    const result = await cloudinary.uploader.upload(myfile)
-    console.log(result);
-    const myImagelink = result.secure_url
-    if (!result) {
-      res.send({ message: "an error occured ", status: false, myImagelink })
+    let myfile = req.body.myfile
+    const email = req.body
+    console.log(myfile);
+    try {
+        const result = await cloudinary.uploader.upload(myfile)
+        console.log(result);
+        const myImagelink = result.secure_url
+        if (!result) {
+            res.send({ message: "an error occured ", status: false, myImagelink })
+        }
+        return res.send({ message: "image upload sucessful ", status: true, myImagelink })
+        console.log(myImagelink);
+    } catch (error) {
+        console.log(error)
     }
-    return res.send({ message: "image upload sucessful ", status: true, myImagelink })
-    console.log(myImagelink);
-  } catch (error) {
-    console.log(error)
-  }
-  // { public_id: "olympic_flag" },
-  // function (error, result) { console.log(result); });
+    // { public_id: "olympic_flag" },
+    // function (error, result) { console.log(result); });
 }
 
 const adminlogin = async (req, res, next) => {
-  let email = req.body.email;
-  let password = req.body.password;
-  // let secret = secret;
-  let username = req.body.username
-  try {
-    await adminModel.find({ email: email }).then((result) => {
-      if (result.length === 0) {
-        res.status(404).send({ message: "You don't have an account with us", status: false })
-      } else {
-        bcryptjs.compare(password, result[0].password).then((result2) => {
-          console.log(result2)
-          console.log(password);
-          if (result2) {
-            const token = jsonWebToken.sign({ email }, "secretkey", { expiresIn: 90 })
-            console.log(token)
-            res.status(200).send({ message: "Welcome" + result[0].username, status: true, token })
-            res.send.body
-          } else {
-            res.status(401).send({ message: "Invalid password", status: false })
-          }
+    let email = req.body.email;
+    let password = req.body.password;
+    // let secret = secret;
+    let username = req.body.username
+    try {
+        await adminModel.find({ email: email }).then((result) => {
+            if (result.length === 0) {
+                res.status(404).send({ message: "You don't have an account with us", status: false })
+            } else {
+                bcryptjs.compare(password, result[0].password).then((result2) => {
+                    console.log(result2)
+                    console.log(password);
+                    if (result2) {
+                        const token = jsonWebToken.sign({ email }, "secretkey", { expiresIn: 90 })
+                        console.log(token)
+                        res.status(200).send({ message: "Welcome" + result[0].username, status: true, token })
+                        res.send.body
+                    } else {
+                        res.status(401).send({ message: "Invalid password", status: false })
+                    }
+                })
+            }
+        }).catch((error) => {
+            console.log(error)
+            res.status(500).send({ message: "Sign in failed", status: false })
         })
-      }
-    }).catch((error) => {
-      console.log(error)
-      res.status(500).send({ message: "Sign in failed", status: false })
-    })
-  } catch (error) {
-    return next(error)
-  }
+    } catch (error) {
+        return next(error)
+    }
 }
 
 const geTdashboard = (req, res) => {
-  let token = req.headers.authorization.split(" ")[1]
-  console.log(token, "token")
-  jwt.verify(token, "secretkey", (error, result) => {
-    if (error) {
-      console.log(error, "error");
-      res.status(401).send({ message: "you can never make it ", status: false })
-      //  return next(error)
-    } else {
-      let email = result.email
-      res.status(200).send({ message: "congrate", status: true, email: email })
-      console.log(result)
+    let token = req.headers.authorization.split(" ")[1]
+    console.log(token, "token")
+    jwt.verify(token, "secretkey", (error, result) => {
+        if (error) {
+            console.log(error, "error");
+            res.status(401).send({ message: "you can never make it ", status: false })
+            //  return next(error)
+        } else {
+            let email = result.email
+            res.status(200).send({ message: "congrate", status: true, email: email })
+            console.log(result)
 
+        }
+    })
+}
+const uploadchat = async (req, res) => {
+    let email = req.body.email;
+    try {
+        await messageModel.find({ email: email }).then((result) => {
+            if (result.length < 0) {
+                res
+                    .status(409)
+                    .send({ message: "Email don't exists.", status: false });
+            } else {
+                // let userData = {
+                //   firstName: req.body.firstname
+                // }
+
+                let form = new messageModel(req.body);
+                form
+                    .save()
+                    .then((result1) => {
+                        console.log(result1);
+                        console.log(req.body);
+                        console.log("your data has saved to database");
+                       // sendMail(email); //This function carries our user email as params.
+                        res
+                            .status(201)
+                            .send({
+                                message: "message has been created successfully",
+                                status: true,
+
+                            });
+
+                        // console.log(req.body);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
+        });
+    } catch (error) {
+        console.log(error);
     }
-  })
 }
-const uploadchat = (req, res) => {
-    console.log(req.body, "body");
-}
-const uploadchats = (req, res)=>{
+const uploadchats = (req, res) => {
     // res.send("comment")
-    res.send("comments")
+   // res.send(Comment)
 }
 // const registerUser = (req, res) => {
 //   console.log(req.boy);

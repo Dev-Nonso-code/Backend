@@ -175,8 +175,13 @@ const geTdashboard = (req, res) => {
   })
 }
 
+const studentcomment =(req, res)=>{
+  // res.render("comment")
+  // console.log(Comment);
+  console.log(req.body, "body");
+  }
 // const registerUser = (req, res) => {
 //   console.log(req.boy);
 // };
 
-module.exports = { landingpage, registerUser, registerUsers, signin, geTdashboard, fileupload, uploadchat };
+module.exports = { landingpage, registerUser, registerUsers, signin, geTdashboard, fileupload, uploadchat, studentcomment };

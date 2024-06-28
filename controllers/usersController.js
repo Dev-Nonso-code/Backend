@@ -6,6 +6,9 @@ const jsonWebToken = require("jsonwebtoken");
 // const { sendMail } = require("../utils/mailer");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary");
+const { generateCode } = require("../utils/generator");
+const { forgotpasswordmail } = require("../utils/mailer");
+
 
 // import { v2 as cloudinary } from 'cloudinary';
 // import { required } from 'nodemon/lib/config';
@@ -129,6 +132,7 @@ const fileupload = async (req, res) => {
 const signin = async (req, res, next) => {
   let email = req.body.email;
   let password = req.body.password;
+  let usename = req.body.usename;
   // let secret = secret;
   let firstname = req.body.firstname
   try {
@@ -175,13 +179,44 @@ const geTdashboard = (req, res) => {
   })
 }
 
-const studentcomment =(req, res)=>{
+const studentcomment = (req, res) => {
   // res.render("comment")
   // console.log(Comment);
   console.log(req.body, "body");
+}
+
+
+const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    const OTP = generateCode();
+
+    const user = await userModel.findOne({ email: email });
+    console.log(user, OTP);
+    if (!user) {
+      return res.status(404).send({ message: "User not found", status: false });
+    }
+    const forgotPassword = await tokenModel.create({ email: email, OTP: OTP });
+    console.log(forgotPassword);
+    if (!forgotPassword) {
+      return res.status(500).send({
+        message: "Error generating OTP. Please try again",
+        status: false,
+      });
+    }
+    const username = user.username;
+    await forgotpasswordmail(email, username, OTP);
+    res
+      .status(200)
+      .send({ message: "Check your mail for OTP", status: true, OTP: OTP });
+  } catch (error) {
+    console.log(error);
+    next(error);
   }
+};
 // const registerUser = (req, res) => {
 //   console.log(req.boy);
 // };
 
-module.exports = { landingpage, registerUser, registerUsers, signin, geTdashboard, fileupload, uploadchat, studentcomment };
+module.exports = { landingpage, registerUser, registerUsers, signin, geTdashboard, fileupload, uploadchat, studentcomment, forgotPassword };

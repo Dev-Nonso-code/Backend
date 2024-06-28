@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {landingpage,registerUser, registerUsers, signin,geTdashboard, fileupload, uploadchat, studentcomment} = require("../controllers/usersController")
+const {landingpage,registerUser, registerUsers, signin,geTdashboard, fileupload, uploadchat, studentcomment, forgotPassword} = require("../controllers/usersController")
 const { registerUserValidationSchema, signinValidationSchema, uploadchatValidationSchema, fileuploadValidationSchema } = require("../middleware/usersValidatr")
 const { validate } = require("../middleware/validae")
 
@@ -12,6 +12,7 @@ router.post('/signin', signin)
 router.post('/upload', fileupload)
 router.post('/chat', uploadchat)
 router.post("/comment", studentcomment)
+router.post("/reset", forgotPassword)
 
 
 

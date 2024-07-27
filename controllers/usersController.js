@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary");
 const { generateCode } = require("../utils/generator");
 const { forgotpasswordmail } = require("../utils/mailer");
+const tokenModel = require("../models/tokenModel");
 
 
 // import { v2 as cloudinary } from 'cloudinary';
@@ -96,9 +97,9 @@ const fileupload = async (req, res) => {
     console.log(result);
     const myImagelink = result.secure_url
     if (!result) {
-      res.send({ message: "an error occured ", status: false, myImagelink })
+      res.send({ message: "an error occurred ", status: false, myImagelink })
     }
-    return res.send({ message: "image upload sucessful ", status: true, myImagelink })
+    return res.send({ message: "image upload successful ", status: true, myImagelink })
     console.log(myImagelink);
 
     // const profileimage = await usersModel.findOneAndUpdate(
@@ -132,7 +133,7 @@ const fileupload = async (req, res) => {
 const signin = async (req, res, next) => {
   let email = req.body.email;
   let password = req.body.password;
-  let usename = req.body.usename;
+  let username = req.body.username;
   // let secret = secret;
   let firstname = req.body.firstname
   try {
@@ -172,7 +173,7 @@ const geTdashboard = (req, res) => {
       //  return next(error)
     } else {
       let email = result.email
-      res.status(200).send({ message: "congrate", status: true, email: email })
+      res.status(200).send({ message: "congrats", status: true, email: email })
       console.log(result)
 
     }
@@ -192,7 +193,7 @@ const forgotPassword = async (req, res, next) => {
     console.log(email);
     const OTP = generateCode();
 
-    const user = await userModel.findOne({ email: email });
+    const user = await usersModel.findOne({ email: email });
     console.log(user, OTP);
     if (!user) {
       return res.status(404).send({ message: "User not found", status: false });
@@ -215,8 +216,37 @@ const forgotPassword = async (req, res, next) => {
     next(error);
   }
 };
+const resetPassword = async (req, res, next) => {
+  try {
+    const { OTP, password } = req.body;
+    const findOTP = await tokenModel.findOne({ OTP: OTP });
+    console.log(findOTP);
+    if (!findOTP) {
+      return res.status(404).send({ message: "OTP not found. Try again" });
+    }
+    let hashedPassword = await bcryptjs.hash(password, 10);
+    const Email = findOTP.email;
+    console.log(Email);
+    const update = await usersModel.updateOne(
+      { email: Email },
+      { $set: { password: hashedPassword } }
+    );
+    if (!update.acknowledged) {
+      return res
+        .status(500)
+        .send({ message: "Error updating password. Try again" });
+    }
+    await tokenModel.deleteOne({ _id: findOTP._id });
+    return res
+      .status(200)
+      .send({ message: "Password updated successfully", status: true });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 // const registerUser = (req, res) => {
 //   console.log(req.boy);
 // };
 
-module.exports = { landingpage, registerUser, registerUsers, signin, geTdashboard, fileupload, uploadchat, studentcomment, forgotPassword };
+module.exports = { landingpage, registerUser, registerUsers, signin, geTdashboard, fileupload, uploadchat, studentcomment, forgotPassword, resetPassword };

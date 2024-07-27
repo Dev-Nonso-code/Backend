@@ -95,9 +95,9 @@ const uploadimage = async (req, res) => {
         console.log(result);
         const myImagelink = result.secure_url
         if (!result) {
-            res.send({ message: "an error occured ", status: false, myImagelink })
+            res.send({ message: "an error occurred ", status: false, myImagelink })
         }
-        return res.send({ message: "image upload sucessful ", status: true, myImagelink })
+        return res.send({ message: "image upload successful ", status: true, myImagelink })
         console.log(myImagelink);
     } catch (error) {
         console.log(error)
@@ -148,7 +148,7 @@ const geTdashboard = (req, res) => {
             //  return next(error)
         } else {
             let email = result.email
-            res.status(200).send({ message: "congrate", status: true, email: email })
+            res.status(200).send({ message: "congrats", status: true, email: email })
             console.log(result)
 
         }
